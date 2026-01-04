@@ -4,6 +4,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { CONFIG } from "../config/env.js";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { ui } from "../interface/UIManager.js";
 
 class CMCPManager {
     clients = new Map();
@@ -15,7 +16,7 @@ class CMCPManager {
             const config = JSON.parse(configFile);
             const servers = config.mcpServers || {};
 
-            console.log([`[MCP] Found ${Object.keys(servers).length} servers in config.`]);
+            ui.log("debug", [`[MCP] Found ${Object.keys(servers).length} servers in config.`]);
 
             for (const [name, serverConfig] of Object.entries(servers)) {
                 try {
@@ -25,14 +26,14 @@ class CMCPManager {
                         await this.registerStdioServer(name, serverConfig);
                     }
                 } catch (error) {
-                    console.error(`[MCP] Failed to connect to ${name}:`, error.message);
+                    ui.log("debug", `[MCP] Failed to connect to ${name}:`, error.message);
                 }
             }
         } catch (error) {
             if (error.code === 'ENOENT') {
-                console.debug(`[MCP] No mcp.json found. Skipping MCP initialization.`);
+                ui.log("debug", `[MCP] No mcp.json found. Skipping MCP initialization.`);
             } else {
-                console.error(`[MCP] Error loading config:`, error);
+                ui.log("debug", `[MCP] Error loading config:`, error);
             }
         }
     }
@@ -67,7 +68,7 @@ class CMCPManager {
 
         this.clients.set(name, client);
         const { tools } = await client.listTools();
-        console.log(`Registered ${name} with ${tools.length} tools.`);
+        ui.log("debug", `Registered ${name} with ${tools.length} tools.`);
     }
 
     async getAllTools() {

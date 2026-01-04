@@ -2,6 +2,8 @@ import readline from "node:readline";
 import chalk from "chalk";
 import { marked } from "marked";
 import TerminalRenderer from "marked-terminal";
+import util from "node:util";
+import { CONFIG } from "../config/env.js";
 
 // Configure Markdown Renderer for Terminal
 marked.setOptions({
@@ -64,6 +66,11 @@ class UIManager {
      * without breaking the user's current input buffer.
      */
     log(type, content) {
+        // Filter debug logs.
+        if (type === "debug" && !CONFIG.DEBUG_MODE) {
+            return;
+        }
+
         // 1. Clear the current prompt line (where the user might be typing)
         readline.clearLine(process.stdout, 0);
         readline.cursorTo(process.stdout, 0);
@@ -83,6 +90,14 @@ class UIManager {
                 console.log(chalk.yellow("🔔 Notification:"));
                 console.log(chalk.yellow(content));
                 console.log(chalk.dim("-----------------------------------"));
+                break;
+
+            case "debug":
+                const debugText = typeof content === 'object'
+                    ? util.inspect(content, { colors: true, depth: null, breakLength: Infinity })
+                    : content;
+
+                console.log(chalk.gray(`🐛 [DEBUG]: ${debugText}`));
                 break;
 
             case "spinner":

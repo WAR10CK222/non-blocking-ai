@@ -1,3 +1,4 @@
+import { ui } from "../interface/UIManager.js";
 import { asanaTools } from "../tools/asana.js";
 import { MCPManager } from "./MCPManager.js";
 
@@ -29,7 +30,7 @@ export async function loadTools() {
         ...dynamicTools
     };
 
-    console.log(`[Registry] Total tools loaded: ${Object.keys(tools).length}`);
+    ui.log("debug", `[Registry] Total tools loaded: ${Object.keys(tools).length}`);
     return tools;
 }
 
