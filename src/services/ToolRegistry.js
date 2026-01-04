@@ -1,6 +1,7 @@
 import { asanaTools } from "../tools/asana.js";
+import { MCPManager } from "./MCPManager.js";
 
-export const tools = {
+let tools = {
     ...asanaTools,
     long_task: {
         name: "long_task",
@@ -16,3 +17,20 @@ export const tools = {
         }
     }
 };
+
+export async function loadTools() {
+    await MCPManager.init();
+
+    const dynamicTools = await MCPManager.getAllTools();
+
+    // Merge tools
+    tools = {
+        ...tools,
+        ...dynamicTools
+    };
+
+    console.log(`[Registry] Total tools loaded: ${Object.keys(tools).length}`);
+    return tools;
+}
+
+export { tools };

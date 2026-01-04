@@ -4,14 +4,15 @@ import { tools } from "./ToolRegistry.js";
 
 const client = new GoogleGenAI({ apiKey: CONFIG.API_KEY });
 
-// Tool Definitions
-const toolDeclarations = Object.values(tools).map(t => ({
-    name: t.name,
-    description: t.description,
-    parametersJsonSchema: t.schema
-}));
 
 export async function generateChatResponse(history) {
+    // Tool Definitions - Note. Moved to declare tools dynamically.
+    const toolDeclarations = Object.values(tools).map(t => ({
+        name: t.name,
+        description: t.description,
+        parametersJsonSchema: t.schema
+    }));
+
     const SYSTEM_PROMPT = `
     You are a helpful AI Project Manager Assistant.
     
