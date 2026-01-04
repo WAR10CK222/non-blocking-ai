@@ -1,18 +1,19 @@
 import { v4 as uuid } from "uuid";
 import { eventBus } from "../core/EventBus.js";
 import { tools } from "./ToolRegistry.js";
+import { ui } from "../interface/UIManager.js";
 
 export function enqueueJob(toolName, input, context = {}) {
     const jobId = uuid();
 
     // Run async without awaiting - Fire & Forget method
-    // console.log(`Job: ${jobId} started (${toolName})...`);
+    ui.log("debug", `Job: ${jobId} started (${toolName})...`);
     eventBus.emit("job:started", { jobId, toolName, context });
 
     (async () => {
         try {
             const result = await tools[toolName].execute(input);
-            // console.log("Result", result, jobId)
+            ui.log("debug", "Result", result, jobId)
             eventBus.emit("job:completed", {
                 jobId,
                 toolName,
@@ -21,7 +22,7 @@ export function enqueueJob(toolName, input, context = {}) {
                 context
             });
         } catch (error) {
-            // console.error("Error", error, jobId);
+            ui.log("debug", "Error", error, jobId);
             eventBus.emit("job:completed", {
                 jobId,
                 toolName,
